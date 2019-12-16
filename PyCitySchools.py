@@ -414,3 +414,39 @@ math_scores_by_grade.index.name = None# Display the DataFrame.
 math_scores_by_grade.head()
 
 # %%
+# Group each school Series by the school name for the average reading score.
+ninth_grade_reading_scores = ninth_graders.groupby(["school_name"]).mean()["reading_score"]
+
+tenth_grade_reading_scores = tenth_graders.groupby(["school_name"]).mean()["reading_score"]
+
+eleventh_grade_reading_scores = eleventh_graders.groupby(["school_name"]).mean()["reading_score"]
+
+twelfth_grade_reading_scores = twelfth_graders.groupby(["school_name"]).mean()["reading_score"]
+
+#%%Combine each Series for average reading scores by school into single DataFrame.
+reading_scores_by_grade = pd.DataFrame({
+               "9th": ninth_grade_reading_scores,
+               "10th": tenth_grade_reading_scores,
+               "11th": eleventh_grade_reading_scores,
+               "12th": twelfth_grade_reading_scores})
+
+reading_scores_by_grade.head()
+
+#%%
+# Format each grade column.
+reading_scores_by_grade["9th"] = reading_scores_by_grade["9th"].map("{:,.1f}".format)
+
+reading_scores_by_grade["10th"] = reading_scores_by_grade["10th"].map("{:,.1f}".format)
+
+reading_scores_by_grade["11th"] = reading_scores_by_grade["11th"].map("{:,.1f}".format)
+
+reading_scores_by_grade["12th"] = reading_scores_by_grade["12th"].map("{:,.1f}".format)
+
+# Make sure the columns are in the correct order.
+reading_scores_by_grade = reading_scores_by_grade[["9th", "10th", "11th", "12th"]]
+
+# Remove the index name.
+reading_scores_by_grade.index.name = None
+# Display the data frame.
+reading_scores_by_grade.head()
+
