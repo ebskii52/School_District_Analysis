@@ -10,15 +10,17 @@ import pandas as pd
 
 #or
 import os
-school_data_to_load = os.path.join("Resources", "schools_complete.csv")
-student_data_to_load = os.path.join("Resources","students_complete.csv")
+school_data_to_load = os.path.join(os.path.dirname(__file__), "Resources", "schools_complete.csv")
+student_data_to_load = os.path.join(os.path.dirname(__file__), "Resources","students_complete.csv")
 
 
 # %%
 # Read the school data file and store it in a Pandas DataFrame.
-school_data_df = pd.read_csv(school_data_to_load)# Define the function "say_hello" so it prints "Hello!" when called.
-def say_hello():
-    print("Hello!")
+
+print(school_data_to_load)
+
+school_data_df = pd.read_csv(school_data_to_load)
+
 student_data_df = pd.read_csv(student_data_to_load)
 # Determine if there are any missing values in the school data.
 school_data_df.count()
@@ -225,35 +227,6 @@ district_summary_df = pd.DataFrame(
 district_summary_df
 
 
-# %%
-# Define the function "say_hello" so it prints "Hello!" when called.
-def say_hello():
-    print("Hello!")
-
-# %%
-# Call the function.
-say_hello()
-
-# %%
-# Define the function "say_something" so it prints whatever is passed as the variable when called.
-def say_something(something):
-    print(something)
-
-# Call the function.
-say_something("Hello World")
-
-
-# %%
-# Define a function that calculates the percentage of students that passed both # math and reading and prints the passing percentage to the output when the
-# function is called.
-def passing_math_percent(pass_math_count, student_count):
-    return pass_math_count / float(student_count) * 100
-
-passing_math_count = 29370
-total_student_count = 39170
-
-# Call the function.
-passing_math_percent(passing_math_count, total_student_count)
 
 
 # %%
@@ -261,8 +234,6 @@ passing_math_percent(passing_math_count, total_student_count)
 district_summary_df["Total Students"] = district_summary_df["Total Students"].map("{:,}".format)
 
 district_summary_df["Total Students"]
-
-
 
 
 # %%
@@ -277,7 +248,6 @@ district_summary_df["% Passing Reading"] = district_summary_df["% Passing Readin
 
 district_summary_df["% Overall Passing"] = district_summary_df["% Overall Passing"].map("{:.0f}".format)
 
-district_summary_df["Average Math Score"]
 
 # %%
 # Reorder the columns in the order you want them to appear.
@@ -285,7 +255,263 @@ new_column_order = ["Total Schools", "Total Students", "Total Budget","Average M
 
 # Assign district summary df the new column order.
 district_summary_df = district_summary_df[new_column_order]
-district_summary_df# %%
+district_summary_df
 
+# %%
+
+
+# %%
+# Determine the school type.
+per_school_types = school_data_df.set_index(["school_name"])["type"]
+per_school_types
+
+# %%
+# Add the per_school_types into a DataFrame for testing.
+df = pd.DataFrame(per_school_types)
+df
+
+
+# %%
+# Calculate the total student count.
+per_school_counts = school_data_complete_df.set_index(["school_name"])["student_name"]
+per_school_counts = per_school_counts.groupby(["school_name"]).count()
+per_school_counts
+
+# %%
+# Calculate the total school budget.
+per_school_budget = school_data_df.set_index(["school_name"])["budget"]
+per_school_budget
+
+# %%
+# Calculate the per capita spending.
+per_school_capita = per_school_budget / per_school_counts
+per_school_capita
+
+# %%
+# Calculate the math scores.
+student_school_name = school_data_complete_df.set_index(["school_name"])["math_score"]
+student_school_name
+
+school_types = school_data_df.set_index(["school_name"])["type"]
+
+# %%
+# Calculate the average math scores.
+per_school_averages = school_data_complete_df.groupby(["school_name"]).mean()
+per_school_averages
+
+# %%
+# Calculate the average test scores.
+per_school_math = school_data_complete_df.groupby(["school_name"]).mean()["math_score"]
+
+per_school_reading = school_data_complete_df.groupby(["school_name"]).mean()["reading_score"]
+
+# %%
+# Calculate the passing scores by creating a filtered DataFrame.
+per_school_passing_math  = school_data_complete_df[(school_data_complete_df["math_score"] >= 70)]
+
+per_school_passing_reading  = school_data_complete_df[(school_data_complete_df["reading_score"] >= 70)]
+
+#%%
+per_school_passing_math = per_school_passing_math.groupby(["school_name"]).count()["student_name"]
+
+per_school_passing_reading = per_school_passing_reading.groupby(["school_name"]).count()["student_name"]
+
+# Calculate the percentage of passing math and reading scores per school.
+per_school_passing_math = per_school_passing_math / per_school_counts * 100
+
+per_school_passing_reading = per_school_passing_reading / per_school_counts * 100
+
+# Calculate the overall passing percentage.
+per_overall_passing_percentage = (per_school_passing_math + per_school_passing_reading) / 2
+
+per_overall_passing_percentage = per_overall_passing_percentage.map("{:,.2f}".format)
+
+# %%
+
+# Adding a list of values with keys to create a new DataFrame.
+#per_school_summary_df = pd.merge(school_types, per_school_counts, on=["school_name"])
+
+per_school_summary_df = pd.concat({
+             "School Type": school_types,
+             "Total Students": per_school_counts,
+             "Total School Budget": per_school_budget,
+             "Per Student Budget": per_school_capita,
+             "Average Math Score": per_school_math,
+           "Average Reading Score": per_school_reading,
+           "% Passing Math": per_school_passing_math,
+           "% Passing Reading": per_school_passing_reading,
+           "% Overall Passing": per_overall_passing_percentage}, axis=1, sort=True)
+
+per_school_summary_df
+
+#%%
+
+# Reorder the columns in the order you want them to appear.
+new_column_order = ["School Type", "Total Students", "Total School Budget", "Per Student Budget", "Average Math Score", "Average Reading Score", "% Passing Math", "% Passing Reading", "% Overall Passing"]
+
+# Assign district summary df the new column order.
+per_school_summary_df = per_school_summary_df[new_column_order]
+
+per_school_summary_df.head()
+
+
+# %%
+# Sort and show top five schools.
+top_schools = per_school_summary_df.sort_values(["% Overall Passing"], ascending=False)
+
+top_schools.head()
+
+# %%
+# Sort and show top five schools.
+bottom_schools = per_school_summary_df.sort_values(["% Overall Passing"], ascending=True)
+
+bottom_schools.head()
+
+# %%
+# Create a grade level DataFrames.
+ninth_graders = school_data_complete_df[(school_data_complete_df["grade"] == "9th")]
+
+tenth_graders = school_data_complete_df[(school_data_complete_df["grade"] == "10th")]
+
+eleventh_graders = school_data_complete_df[(school_data_complete_df["grade"] == "11th")]
+
+twelfth_graders = school_data_complete_df[(school_data_complete_df["grade"] == "12th")]
+
+# %%
+# Group each school Series by the school name for the average reading score.
+ninth_grade_math_scores = ninth_graders.groupby(["school_name"]).mean()["math_score"]
+
+tenth_grade_math_scores = tenth_graders.groupby(["school_name"]).mean()["math_score"]
+
+eleventh_grade_math_scores = eleventh_graders.groupby(["school_name"]).mean()["math_score"]
+
+twelfth_grade_math_scores = twelfth_graders.groupby(["school_name"]).mean()["math_score"]
+
+# %%
+# Combine each Series for average math scores by school into single DataFrame.
+math_scores_by_grade = pd.DataFrame({
+               "9th": ninth_grade_math_scores,
+               "10th": tenth_grade_math_scores,
+               "11th": eleventh_grade_math_scores,
+               "12th": twelfth_grade_math_scores})
+
+math_scores_by_grade.head()
+
+# %%
+# Format each grade column.
+math_scores_by_grade["9th"] = math_scores_by_grade["9th"].map("{:.1f}".format)
+
+math_scores_by_grade["10th"] = math_scores_by_grade["10th"].map("{:.1f}".format)
+
+math_scores_by_grade["11th"] = math_scores_by_grade["11th"].map("{:.1f}".format)
+
+math_scores_by_grade["12th"] = math_scores_by_grade["12th"].map("{:.1f}".format)
+
+# Make sure the columns are in the correct order.
+math_scores_by_grade = math_scores_by_grade[["9th", "10th", "11th", "12th"]]
+# Remove the index name.
+math_scores_by_grade.index.name = None# Display the DataFrame.
+math_scores_by_grade.head()
+
+# %%
+# Cut the per_school_capita into the spending ranges.
+#spending_bins = [0, 585, 615, 645, 675]
+#pd.cut(per_school_capita, spending_bins)
+
+# %%
+# Get the descriptive statistics for the per_school_capita.
+per_school_capita.describe()
+
+# %%
+# Establish the spending bins and group names.
+spending_bins = [0, 585, 630, 645, 675]
+
+group_names = ["<$584", "$585-629", "$630-644", "$645-675"]
+per_school_capita.groupby(pd.cut(per_school_capita, spending_bins)).count()
+
+#%%
+
+per_school_summary_dfs["Spending Ranges (Per Student)"] = pd.cut(per_school_capita, spending_bins, labels=group_names)
+
+per_school_summary_dfs
+
+#%%
+# Calculate averages for the desired columns.
+spending_math_scores = per_school_summary_dfs.groupby(["Spending Ranges (Per Student)"]).mean()["Average Math Score"]
+
+spending_reading_scores = per_school_summary_dfs.groupby(["Spending Ranges (Per Student)"]).mean()["Average Reading Score"]
+
+spending_passing_math = per_school_summary_dfs.groupby(["Spending Ranges (Per Student)"]).mean()["% Passing Math"]
+
+spending_passing_reading = per_school_summary_dfs.groupby(["Spending Ranges (Per Student)"]).mean()["% Passing Reading"]
+
+
+# Calculate the overall passing percentage.
+overall_passing_percentage = (spending_passing_math + spending_passing_reading) / 2  
+
+# %%
+# Assemble into DataFrame.
+spending_summary_df = pd.DataFrame({
+          "Average Math Score" : spending_math_scores,
+          "Average Reading Score": spending_reading_scores,
+          "% Passing Math": spending_passing_math,
+          "% Passing Reading": spending_passing_reading,
+          "% Overall Passing": overall_passing_percentage})
+
+spending_summary_df
+
+#%%
+# Formatting
+spending_summary_df["Average Math Score"] = spending_summary_df["Average Math Score"].map("{:.1f}".format)
+
+spending_summary_df["Average Reading Score"] = spending_summary_df["Average Reading Score"].map("{:.1f}".format)
+
+spending_summary_df["% Passing Math"] = spending_summary_df["% Passing Math"].map("{:.0f}".format)
+
+spending_summary_df["% Passing Reading"] = spending_summary_df["% Passing Reading"].map("{:.0f}".format)
+
+spending_summary_df["% Overall Passing"] = spending_summary_df["% Overall Passing"].map("{:.0f}".format)
+
+spending_summary_df
+
+
+# %%
+# Assemble into DataFrame.
+# Calculate averages for the desired columns.
+
+# Categorize spending based on the bins.
+
+per_school_summary_df["Spending Ranges (Per Student)"] = pd.cut(per_school_capita, spending_bins, labels=group_names)
+
+per_school_summary_df
+
+
+
+size_bins = [0, 1000, 2000, 5000]
+
+group_names = ["Small (<1000)", "Medium (1000-2000)", "Large (2000-5000)"]
+
+per_school_summary_df["School Size"] = pd.cut(per_school_summary_df["Total Students"], size_bins, labels=group_names)
+
+per_school_summary_df.head()
+
+size_math_scores = per_school_summary_df.groupby(["School Size"]).mean()["Average Math Score"]
+
+size_reading_scores = per_school_summary_df.groupby(["School Size"]).mean()["Average Reading Score"]
+
+size_passing_math = per_school_summary_df.groupby(["School Size"]).mean()["% Passing Math"]
+
+size_passing_reading = per_school_summary_df.groupby(["School Size"]).mean()["% Passing Reading"]
+
+size_overall_passing = (size_passing_math + size_passing_reading) / 2
+
+size_summary_df = pd.DataFrame({
+          "Average Math Score" : size_math_scores,
+          "Average Reading Score": size_reading_scores,
+          "% Passing Math": size_passing_math,
+          "% Passing Reading": size_passing_reading,
+          "% Overall Passing": size_overall_passing})
+
+size_summary_df
 
 # %%
