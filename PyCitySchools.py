@@ -450,3 +450,58 @@ reading_scores_by_grade.index.name = None
 # Display the data frame.
 reading_scores_by_grade.head()
 
+# %%
+# Get the descriptive statistics for the per_school_capita.
+per_school_capita.describe()
+
+# %%
+# Establish the spending bins and group names.
+spending_bins = [0, 585, 630, 645, 675]
+
+group_names = ["<$584", "$585-629", "$630-644", "$645-675"]
+per_school_capita.groupby(pd.cut(per_school_capita, spending_bins)).count()
+
+#%%
+
+per_school_summary_df["Spending Ranges (Per Student)"] = pd.cut(per_school_capita, spending_bins, labels=group_names)
+
+per_school_summary_df
+
+#%%
+# Calculate averages for the desired columns.
+spending_math_scores = per_school_summary_df.groupby(["Spending Ranges (Per Student)"]).mean()["Average Math Score"]
+
+spending_reading_scores = per_school_summary_df.groupby(["Spending Ranges (Per Student)"]).mean()["Average Reading Score"]
+
+spending_passing_math = per_school_summary_df.groupby(["Spending Ranges (Per Student)"]).mean()["% Passing Math"]
+
+spending_passing_reading = per_school_summary_df.groupby(["Spending Ranges (Per Student)"]).mean()["% Passing Reading"]
+
+
+# Calculate the overall passing percentage.
+overall_passing_percentage = (spending_passing_math + spending_passing_reading) / 2  
+
+# %%
+# Assemble into DataFrame.
+spending_summary_df = pd.DataFrame({
+          "Average Math Score" : spending_math_scores,
+          "Average Reading Score": spending_reading_scores,
+          "% Passing Math": spending_passing_math,
+          "% Passing Reading": spending_passing_reading,
+          "% Overall Passing": overall_passing_percentage})
+
+spending_summary_df
+
+#%%
+# Formatting
+spending_summary_df["Average Math Score"] = spending_summary_df["Average Math Score"].map("{:.1f}".format)
+
+spending_summary_df["Average Reading Score"] = spending_summary_df["Average Reading Score"].map("{:.1f}".format)
+
+spending_summary_df["% Passing Math"] = spending_summary_df["% Passing Math"].map("{:.0f}".format)
+
+spending_summary_df["% Passing Reading"] = spending_summary_df["% Passing Reading"].map("{:.0f}".format)
+
+spending_summary_df["% Overall Passing"] = spending_summary_df["% Overall Passing"].map("{:.0f}".format)
+
+spending_summary_df
