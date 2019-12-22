@@ -331,7 +331,18 @@ per_overall_passing_percentage = per_overall_passing_percentage.map("{:,.2f}".fo
 # Adding a list of values with keys to create a new DataFrame.
 #per_school_summary_df = pd.merge(school_types, per_school_counts, on=["school_name"])
 
-per_school_summary_df = pd.concat({
+#per_school_summary_df = pd.concat({
+ #            "School Type": school_types,
+  #           "Total Students": per_school_counts,
+   #          "Total School Budget": per_school_budget,
+    #         "Per Student Budget": per_school_capita,
+     #        "Average Math Score": per_school_math,
+      #     "Average Reading Score": per_school_reading,
+       #    "% Passing Math": per_school_passing_math,
+        #   "% Passing Reading": per_school_passing_reading,
+         #  "% Overall Passing": per_overall_passing_percentage}, axis=1, sort=True)
+
+per_school_summary_df = pd.DataFrame({
              "School Type": school_types,
              "Total Students": per_school_counts,
              "Total School Budget": per_school_budget,
@@ -340,7 +351,7 @@ per_school_summary_df = pd.concat({
            "Average Reading Score": per_school_reading,
            "% Passing Math": per_school_passing_math,
            "% Passing Reading": per_school_passing_reading,
-           "% Overall Passing": per_overall_passing_percentage}, axis=1, sort=True)
+           "% Overall Passing": per_overall_passing_percentage})
 
 per_school_summary_df
 

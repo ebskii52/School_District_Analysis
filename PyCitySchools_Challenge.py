@@ -122,7 +122,10 @@ len(students_fixed)
 
 # %% Using LOC to remove thomas high school
 import numpy as np
-student_data_df.loc[student_data_df["school_name"] == "Thomas High School", ["reading_score", "math_score"]] = np.nan
+student_data_df.loc[(student_data_df["school_name"] == "Thomas High School") & (student_data_df["grade"] == "9th") , ["reading_score", "math_score"]] = np.nan
+
+
+#student_data_df.loc[((student_data_df["school_name"] == "Thomas High School") & (student_data_df["grade"] == "9th")), ["reading_score", "math_score"]] = np.nan
 
 # %%
 # Combine the data into a single dataset.
