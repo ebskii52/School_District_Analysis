@@ -242,6 +242,8 @@ district_summary_df["% Passing Reading"] = district_summary_df["% Passing Readin
 
 district_summary_df["% Overall Passing"] = district_summary_df["% Overall Passing"].map("{:.0f}".format)
 
+district_summary_df["Total Budget"] = district_summary_df["Total Budget"].map("${:,}".format)
+
 
 # %%
 # Reorder the columns in the order you want them to appear.
@@ -252,9 +254,6 @@ district_summary_df = district_summary_df[new_column_order]
 district_summary_df
 
 # %%
-
-
-# %%
 # Determine the school type.
 per_school_types = school_data_df.set_index(["school_name"])["type"]
 per_school_types
@@ -262,8 +261,6 @@ per_school_types
 # %%
 # Add the per_school_types into a DataFrame for testing.
 df = pd.DataFrame(per_school_types)
-df
-
 
 # %%
 # Calculate the total student count.
