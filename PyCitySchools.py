@@ -227,8 +227,6 @@ district_summary_df = pd.DataFrame(
 district_summary_df
 
 
-
-
 # %%
 # Format the "Total Students" to have the comma for a thousands separator.
 district_summary_df["Total Students"] = district_summary_df["Total Students"].map("{:,}".format)

@@ -10,7 +10,7 @@ import pandas as pd
 
 #or
 import os
-school_data_to_load = os.path.join(os.path.dirname(__file__), "Resources", "schools_complete.csv")
+school_data_to_load = os.path.join(os.path.dirname(""), "Resources", "schools_complete.csv")
 student_data_to_load = os.path.join(os.path.dirname(__file__), "Resources","students_complete.csv")
 
 
@@ -122,6 +122,7 @@ len(students_fixed)
 
 # %% Using LOC to remove thomas high school
 import numpy as np
+
 student_data_df.loc[(student_data_df["school_name"] == "Thomas High School") & (student_data_df["grade"] == "9th") , ["reading_score", "math_score"]] = np.nan
 
 
